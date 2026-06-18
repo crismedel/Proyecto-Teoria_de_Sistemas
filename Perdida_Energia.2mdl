@@ -1,0 +1,144 @@
+{UTF-8}
+Capacidad BESS Instalada= INTEG (Tasa de Inversión BESS,
+		0)
+	~	MW
+	~		|
+
+Capacidad de Transmisión  = A FUNCTION OF( )
+	~	
+	~		|
+
+Capacidad ERNC Instalada= INTEG (Tasa Expansión ERNC,
+		18471)
+	~	MW
+	~		|
+
+Demanda del Sistema  = A FUNCTION OF( )
+	~	
+	~		|
+
+Energía Vertida Acumulada= INTEG (Tasa de Vertimiento,
+		5642)
+	~	GWh
+	~		|
+
+Factor Incentivo BESS  = A FUNCTION OF( Pérdida de Rentabilidad)
+	~	
+	~		|
+
+Generación Excedente=MAX ( 0 , (Capacidad ERNC Instalada * 0.5) - Demanda del Sistema\
+		 - Capacidad de Transmisión )
+	~	GWh/mes
+	~		|
+
+Pérdida de Rentabilidad=Tasa de Vertimiento * 40056
+	~	$USD
+	~		|
+
+Tasa de Inversión BESS  = A FUNCTION OF( Factor Incentivo BESS)
+	~	
+	~		|
+
+Tasa de Vertimiento=MAX ( 0 , Generación Excedente - (Capacidad BESS Instalada * 0.5\
+		) )
+	~	GWh/mes
+	~		|
+
+Tasa Expansión ERNC  = A FUNCTION OF( Pérdida de Rentabilidad)
+	~	
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 100
+	~	Month
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Month
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP 
+	~	Month [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	Month [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,100,2
+10,1,Capacidad ERNC Instalada,221,27,62,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,2,Energía Vertida Acumulada,245,408,58,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,3,Capacidad BESS Instalada,801,751,60,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,4,48,2,499,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,5,7,4,100,0,0,22,0,192,0,-1--1--1,,1|(58,499)|
+1,6,7,1,4,0,0,22,0,192,0,-1--1--1,,1|(110,27)|
+11,7,0,110,499,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,8,Tasa Expansión ERNC,110,533,58,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,9,48,581,317,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,10,12,9,100,0,0,22,0,192,0,-1--1--1,,1|(508,317)|
+1,11,12,2,4,0,0,22,0,192,0,-1--1--1,,1|(245,317)|
+11,12,0,440,317,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,13,Tasa de Vertimiento,440,351,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,14,48,508,735,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,15,17,14,100,0,0,22,0,192,0,-1--1--1,,1|(540,735)|
+1,16,17,3,4,0,0,22,0,192,0,-1--1--1,,1|(658,735)|
+11,17,0,569,735,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,18,Tasa de Inversión BESS,569,769,65,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,19,Demanda del Sistema,422,16,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,20,Capacidad de Transmisión,631,24,52,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,21,Generación Excedente,451,207,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,22,Pérdida de Rentabilidad,442,465,49,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,23,Factor Incentivo BESS,523,630,59,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,24,1,21,1,0,0,0,0,192,0,-1--1--1,,1|(279,155)|
+1,25,19,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,26,20,21,1,0,0,0,0,192,0,-1--1--1,,1|(621,112)|
+1,27,21,13,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,28,13,22,1,0,0,0,0,192,0,-1--1--1,,1|(436,411)|
+1,29,22,8,1,0,0,0,0,192,0,-1--1--1,,1|(296,518)|
+1,30,22,23,1,0,0,0,0,192,0,-1--1--1,,1|(462,572)|
+1,31,23,18,1,0,0,0,0,192,0,-1--1--1,,1|(542,699)|
+1,32,3,13,1,0,0,0,0,192,0,-1--1--1,,1|(708,497)|
+///---\\\
+:L<%^E!@
+5:Pérdida de Rentabilidad
+19:100,0
+24:0
+25:0
+26:0
+23:0
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:0
+72:0
+73:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Vensim Sans|12||0-0-0|0-0-0|-1--1--1|0-0-255|192-192-192|-1--1--1
