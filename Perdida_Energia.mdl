@@ -22,7 +22,7 @@ Energía Vertida Acumulada= INTEG (Tasa de Vertimiento,
 	~	GWh
 	~		|
 
-Factor Incentivo BESS=Pérdida de Rentabilidad / 1e+07
+Factor Incentivo BESS=MIN(3, Pérdida de Rentabilidad / 1e+07)
 	~	
 	~		|
 
@@ -35,11 +35,11 @@ Pérdida de Rentabilidad=Tasa de Vertimiento * 62821
 	~	$USD
 	~		|
 
-Subsidio Estatal BESS=STEP(300, 24)
+Subsidio Estatal BESS=STEP(150, 24)
 	~	MW/mes
 	~		|
 
-Tasa de Inversión BESS=(Factor Incentivo BESS * 50) + Subsidio Estatal BESS
+Tasa de Inversión BESS=10 + (Factor Incentivo BESS * 50) + Subsidio Estatal BESS
 	~	MW/mes
 	~		|
 
@@ -48,7 +48,7 @@ Tasa de Vertimiento=MAX ( 0 , Generación Excedente - (Capacidad BESS Instalada 
 	~	GWh/mes
 	~		|
 
-Tasa Expansión ERNC=MAX ( 0 , 150 - (Pérdida de Rentabilidad * 0.0001) )
+Tasa Expansión ERNC=150 / (1 + (Pérdida de Rentabilidad / 50000000))
 	~	
 	~		|
 
