@@ -1,11 +1,11 @@
 import pandas as pd
 
 # Cargar datos de demanda neta
-df_demanda = pd.read_excel('data/Demanda Neta - 01-2025_04_2025.xlsx')
+df_demanda = pd.read_excel('data/Demanda sistematica real_04-2026.xlsx')
 
 # Sumar toda la energia del cuatrimestre y dividir por 4 meses
 # Cambiar 'Energia_MWh' por el nombre real de la cabecera en el CSV
-demanda_total_mwh = df_demanda['D. Neta estimada [MWh]'].sum()
+demanda_total_mwh = df_demanda['Demanda sistémica real (Mwh)'].sum()
 promedio_mensual_demanda_mwh = demanda_total_mwh / 4
 promedio_mensual_demanda_gwh = promedio_mensual_demanda_mwh / 1000
 
