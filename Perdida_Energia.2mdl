@@ -1,28 +1,11 @@
 {UTF-8}
-Factor de Energía Generada=0.72
-	~	GWh/mes
-	~		|
-
-Generación Excedente=MAX ( 0 , (Capacidad ERNC Instalada * Factor de Energía Generada\
-		) - Demanda del Sistema - Capacidad de Transmisión )
-	~	GWh/mes
-	~		|
-
-Factor de Absorción BESS=0.12
-	~	GWh/mes
-	~		|
-
-Tasa de Vertimiento=MAX ( 0 , Generación Excedente - (Capacidad BESS Instalada * Factor de Absorción BESS\
-		) )
-	~	GWh/mes
-	~		|
-
-Capacidad BESS Instalada= INTEG (Tasa de Inversión BESS,
+Capacidad BESS Instalada= INTEG (Tasa de Inversión BESS - Tasa de Degradación BESS,
 		1575)
 	~	MW
 	~		|
 
-Capacidad de Transmisión=1800
+Capacidad de Transmisión= INTEG (Tasa de Puesta en Servicio,
+		1800)
 	~	GWh/mes
 	~		|
 
@@ -31,7 +14,16 @@ Capacidad ERNC Instalada= INTEG (Tasa Expansión ERNC,
 	~	MW
 	~		|
 
-Demanda del Sistema=6395
+Costo Unitario Transmisión=1.5e+06
+	~	$USD/(GWh/mes)
+	~		|
+
+Crecimiento Total de Demanda=Tasa de Crecimiento Poblacional + Expansión Minera e Industrial
+	~	Dmnl
+	~		|
+
+Demanda del Sistema= INTEG (Incremento de Demanda,
+		6395)
 	~	GWh/mes
 	~		|
 
@@ -40,24 +32,89 @@ Energía Vertida Acumulada= INTEG (Tasa de Vertimiento,
 	~	GWh
 	~		|
 
-Factor Incentivo BESS=Pérdida de Rentabilidad / 1e+07
+Expansión Minera e Industrial=0.0025
+	~	1/mes
+	~		|
+
+Factor de Absorción BESS=0.12
+	~	GWh/mes
+	~		|
+
+Factor de Energía Generada=0.72
+	~	GWh/mes
+	~		|
+
+Factor de Vida Útil BESS=0.0055
+	~	1/mes
+	~		|
+
+Factor Incentivo BESS=MIN(3, Pérdida de Rentabilidad / 1e+07)
 	~	GWh/(MW*mes)
+	~		|
+
+Generación Excedente=MAX ( 0 , (Capacidad ERNC Instalada * Factor de Energía Generada\
+		) - Demanda del Sistema - Capacidad de Transmisión )
+	~	GWh/mes
+	~		|
+
+Incremento de Demanda=Demanda del Sistema * Crecimiento Total de Demanda
+	~	GWh/mes
+	~		|
+
+Líneas en Construcción= INTEG (Tasa de Inicio de Obras - Tasa de Puesta en Servicio\
+		,
+		0)
+	~	GWh/mes
+	~		|
+
+Inversión Reactiva en Transmisión=Pérdida de Rentabilidad * Factor de Reacción Estatal
+	~	$USD/mes
+	~		|
+
+Factor de Reacción Estatal=0.15
+	~	Dmnl
 	~		|
 
 Pérdida de Rentabilidad=Tasa de Vertimiento * 62821
 	~	$USD
 	~		|
 
-Subsidio Estatal BESS=STEP(300, 24)
+Subsidio Estatal BESS=(Tasa Expansión ERNC * (Factor de Energía Generada / Factor de Absorción BESS\
+		)) + (Tasa de Vertimiento * 0.05)
 	~	MW/mes
 	~		|
 
-Tasa de Inversión BESS=(Factor Incentivo BESS * 10) + Subsidio Estatal BESS
+Tasa de Crecimiento Poblacional=0.001
+	~	1/mes
+	~		|
+
+Tasa de Degradación BESS=Capacidad BESS Instalada * Factor de Vida Útil BESS
 	~	MW/mes
 	~		|
 
-Tasa Expansión ERNC=MAX (0, 150 - (Pérdida de Rentabilidad * 5e-06))
+Tasa de Inicio de Obras=Inversión Reactiva en Transmisión / Costo Unitario Transmisión
+	~	GWh/mes/mes
+	~		|
+
+Tasa de Inversión BESS=(Factor Incentivo BESS * 15) + Subsidio Estatal BESS
+	~	MW/mes
+	~		|
+
+Tasa de Puesta en Servicio=Líneas en Construcción / Tiempo de Construcción
+	~	GWh/mes/mes
+	~		|
+
+Tasa de Vertimiento=MAX ( 0 , Generación Excedente - (Capacidad BESS Instalada * Factor de Absorción BESS\
+		) )
+	~	GWh/mes
+	~		|
+
+Tasa Expansión ERNC=150 / (1 + (Pérdida de Rentabilidad / 5e+07))
 	~	GWh/(MW*mes)
+	~		|
+
+Tiempo de Construcción=48
+	~	Month
 	~		|
 
 ********************************************************
@@ -90,52 +147,86 @@ TIME STEP  = 1
 \\\---/// Sketch information - do not modify anything except names
 V300  Do not put anything below this section - it will be ignored
 *View 1
-$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,75,2
-10,1,Capacidad ERNC Instalada,956,164,62,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,2,Energía Vertida Acumulada,985,545,58,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,3,Capacidad BESS Instalada,1541,888,60,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,4,48,742,636,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,5,7,4,100,0,0,22,0,192,0,-1--1--1,,1|(798,636)|
-1,6,7,1,4,0,0,22,0,192,0,-1--1--1,,1|(850,164)|
-11,7,0,850,636,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,8,Tasa Expansión ERNC,850,670,58,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,9,48,1321,454,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,10,12,9,100,0,0,22,0,192,0,-1--1--1,,1|(1248,454)|
-1,11,12,2,4,0,0,22,0,192,0,-1--1--1,,1|(985,454)|
-11,12,0,1180,454,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,13,Tasa de Vertimiento,1180,488,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,14,48,1248,872,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,15,17,14,100,0,0,22,0,192,0,-1--1--1,,1|(1280,872)|
-1,16,17,3,4,0,0,22,0,192,0,-1--1--1,,1|(1398,872)|
-11,17,0,1309,872,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,18,Tasa de Inversión BESS,1309,906,65,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,19,Demanda del Sistema,1162,153,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,20,Capacidad de Transmisión,1371,161,52,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,21,Generación Excedente,1191,344,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,22,Pérdida de Rentabilidad,1182,602,49,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,23,Factor Incentivo BESS,1263,767,59,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,24,1,21,1,0,0,0,0,192,0,-1--1--1,,1|(1016,293)|
+$-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,61,2
+10,1,Capacidad ERNC Instalada,121,478,62,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,2,Energía Vertida Acumulada,235,597,58,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,3,Capacidad BESS Instalada,941,994,60,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,4,48,-165,513,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,5,7,4,100,0,0,22,0,192,0,-1--1--1,,1|(-95,513)|
+1,6,7,1,4,0,0,22,0,192,0,-1--1--1,,1|(-28,478)|
+11,7,0,-28,513,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,8,Tasa Expansión ERNC,-28,547,58,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,9,48,627,589,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,10,12,9,100,0,0,22,0,192,0,-1--1--1,,1|(551,589)|
+1,11,12,2,4,0,0,22,0,192,0,-1--1--1,,1|(383,589)|
+11,12,0,480,589,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,13,Tasa de Vertimiento,480,623,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,14,48,455,983,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,15,17,14,100,0,0,22,0,192,0,-1--1--1,,1|(553,983)|
+1,16,17,3,4,0,0,22,0,192,0,-1--1--1,,1|(767,983)|
+11,17,0,648,983,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,18,Tasa de Inversión BESS,648,1017,65,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,19,Demanda del Sistema,466,324,51,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,20,Capacidad de Transmisión,677,296,52,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,21,Generación Excedente,497,479,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,22,Pérdida de Rentabilidad,488,737,49,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,23,Factor Incentivo BESS,569,902,59,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,24,1,21,1,0,0,0,0,192,0,-1--1--1,,1|(273,560)|
 1,25,19,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,26,20,21,1,0,0,0,0,192,0,-1--1--1,,1|(1361,249)|
+1,26,20,21,1,0,0,0,0,192,0,-1--1--1,,1|(667,384)|
 1,27,21,13,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,28,13,22,1,0,0,0,0,192,0,-1--1--1,,1|(1176,548)|
-1,29,22,8,1,0,0,0,0,192,0,-1--1--1,,1|(1036,655)|
-1,30,22,23,1,0,0,0,0,192,0,-1--1--1,,1|(1202,709)|
-1,31,23,18,1,0,0,0,0,192,0,-1--1--1,,1|(1282,836)|
-1,32,3,13,1,0,0,0,0,192,0,-1--1--1,,1|(1448,634)|
-10,33,Subsidio Estatal BESS,1424,1015,68,30,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,28,13,22,1,0,0,0,0,192,0,-1--1--1,,1|(479,678)|
+1,29,22,8,1,0,0,0,0,192,0,-1--1--1,,1|(238,694)|
+1,30,22,23,1,0,0,0,0,192,0,-1--1--1,,1|(508,844)|
+1,31,23,18,1,0,0,0,0,192,0,-1--1--1,,1|(606,967)|
+1,32,3,13,1,0,0,0,0,192,0,-1--1--1,,1|(807,724)|
+10,33,Subsidio Estatal BESS,858,1235,68,30,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,34,33,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,35,Factor de Energía Generada,1497,330,65,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,36,35,21,1,0,0,0,0,192,0,-1--1--1,,1|(1334,376)|
-10,37,Factor de Absorción BESS,1505,493,58,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,38,37,13,1,0,0,0,0,192,0,-1--1--1,,1|(1375,476)|
+10,35,Factor de Energía Generada,1206,512,65,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,36,35,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,37,Factor de Absorción BESS,1087,624,58,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,38,37,13,1,0,0,0,0,192,0,-1--1--1,,1|(855,603)|
+1,39,8,33,1,0,0,0,0,192,0,-1--1--1,,1|(180,967)|
+1,40,13,33,1,0,0,0,0,192,0,-1--1--1,,1|(761,851)|
+1,41,37,33,1,0,0,0,0,192,0,-1--1--1,,1|(1067,975)|
+1,42,35,33,1,0,0,0,0,192,0,-1--1--1,,1|(1104,1077)|
+10,43,Incremento de Demanda,467,205,50,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,44,Crecimiento Total de Demanda,468,127,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,45,Tasa de Crecimiento Poblacional,305,56,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,46,Expansión Minera e Industrial,625,85,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,47,Tasa de Degradación BESS,1268,1066,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,48,Factor de Vida Útil BESS,1453,1054,50,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,49,Líneas en Construcción,1014,294,60,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,50,Tasa de Puesta en Servicio,843,298,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,51,Tasa de Inicio de Obras,1177,291,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,52,Tiempo de Construcción,841,411,50,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,53,Inversión Reactiva en Transmisión,1168,407,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,54,Factor de Reacción Estatal,1368,389,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,55,Costo Unitario Transmisión,1107,136,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,56,44,43,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,57,45,44,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,58,46,44,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,59,19,43,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,60,48,47,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,61,3,47,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,62,52,50,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,63,49,50,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,64,53,51,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,65,55,51,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,66,54,53,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,67,22,53,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,68,47,3,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,69,43,19,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,70,50,20,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,71,51,49,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,72,50,49,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
 ///---\\\
 :L<%^E!@
 1:current.vdfx
 4:Time
-5:Subsidio Estatal BESS
+5:Presupuesto para Transmisión
 9:current
-19:75,0
+19:61,0
 24:0
 25:72
 26:72
