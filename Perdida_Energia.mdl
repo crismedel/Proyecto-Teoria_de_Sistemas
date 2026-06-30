@@ -1,34 +1,11 @@
 {UTF-8}
-Subsidio Estatal BESS=(Tasa Expansión ERNC * (Factor de Energía Generada / Factor de Absorción BESS\
-		)) + (Tasa de Vertimiento
-	 * 0.05)
-	~	MW/mes
-	~		|
-
-Factor de Energía Generada=0.72
-	~	GWh/mes
-	~		|
-
-Generación Excedente=MAX ( 0 , (Capacidad ERNC Instalada * Factor de Energía Generada\
-		) - Demanda del Sistema - Capacidad de Transmisión )
-	~	GWh/mes
-	~		|
-
-Factor de Absorción BESS=0.12
-	~	GWh/mes
-	~		|
-
-Tasa de Vertimiento=MAX ( 0 , Generación Excedente - (Capacidad BESS Instalada * Factor de Absorción BESS\
-		) )
-	~	GWh/mes
-	~		|
-
-Capacidad BESS Instalada= INTEG (Tasa de Inversión BESS,
+Capacidad BESS Instalada= INTEG (Tasa de Inversión BESS - Tasa de Degradación BESS,
 		1575)
 	~	MW
 	~		|
 
-Capacidad de Transmisión=1800
+Capacidad de Transmisión= INTEG (Tasa de Puesta en Servicio,
+		1800)
 	~	GWh/mes
 	~		|
 
@@ -37,7 +14,16 @@ Capacidad ERNC Instalada= INTEG (Tasa Expansión ERNC,
 	~	MW
 	~		|
 
-Demanda del Sistema=6395
+Costo Unitario Transmisión=1.5e+06
+	~	$USD/(GWh/mes)
+	~		|
+
+Crecimiento Total de Demanda=Tasa de Crecimiento Poblacional + Expansión Minera e Industrial
+	~	Dmnl
+	~		|
+
+Demanda del Sistema= INTEG (Incremento de Demanda,
+		6395)
 	~	GWh/mes
 	~		|
 
@@ -46,20 +32,88 @@ Energía Vertida Acumulada= INTEG (Tasa de Vertimiento,
 	~	GWh
 	~		|
 
+Expansión Minera e Industrial=0.0025
+	~	1/mes
+	~		|
+
+Factor de Absorción BESS=0.12
+	~	GWh/mes
+	~		|
+
+Factor de Energía Generada=0.72
+	~	GWh/mes
+	~		|
+
+Factor de Vida Útil BESS=0.0016
+	~	1/mes
+	~		|
+
 Factor Incentivo BESS=MIN(3, Pérdida de Rentabilidad / 1e+07)
 	~	GWh/(MW*mes)
+	~		|
+
+Generación Excedente=MAX ( 0 , (Capacidad ERNC Instalada * Factor de Energía Generada\
+		) - Demanda del Sistema - Capacidad de Transmisión )
+	~	GWh/mes
+	~		|
+
+Incremento de Demanda=Demanda del Sistema * Crecimiento Total de Demanda
+	~	GWh/mes
+	~		|
+
+Líneas en Construcción= INTEG (Tasa de Inicio de Obras - Tasa de Puesta en Servicio,
+		0)
+	~	GWh/mes
+	~		|
+
+Presupuesto para Transmisión=Pérdida de Rentabilidad * Proporción Inversión Transmisión
+	~	$USD/mes
+	~		|
+
+Proporción Inversión Transmisión=0.15
+	~	Dmnl
 	~		|
 
 Pérdida de Rentabilidad=Tasa de Vertimiento * 62821
 	~	$USD
 	~		|
 
+Subsidio Estatal BESS=(Tasa Expansión ERNC * (Factor de Energía Generada / Factor de Absorción BESS\
+		)) + (Tasa de Vertimiento * 0.05)
+	~	MW/mes
+	~		|
+
+Tasa de Crecimiento Poblacional=0.001
+	~	1/mes
+	~		|
+
+Tasa de Degradación BESS=Capacidad BESS Instalada * Factor de Vida Útil BESS
+	~	MW/mes
+	~		|
+
+Tasa de Inicio de Obras=Presupuesto para Transmisión / Costo Unitario Transmisión
+	~	GWh/mes/mes
+	~		|
+
 Tasa de Inversión BESS=(Factor Incentivo BESS * 15) + Subsidio Estatal BESS
 	~	MW/mes
 	~		|
 
+Tasa de Puesta en Servicio=Líneas en Construcción / Tiempo de Construcción
+	~	GWh/mes/mes
+	~		|
+
+Tasa de Vertimiento=MAX ( 0 , Generación Excedente - (Capacidad BESS Instalada * Factor de Absorción BESS\
+		) )
+	~	GWh/mes
+	~		|
+
 Tasa Expansión ERNC=150 / (1 + (Pérdida de Rentabilidad / 5e+07))
 	~	GWh/(MW*mes)
+	~		|
+
+Tiempo de Construcción=48
+	~	Month
 	~		|
 
 ********************************************************
@@ -111,8 +165,8 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,75,2
 1,16,17,3,4,0,0,22,0,192,0,-1--1--1,,1|(1149,757)|
 11,17,0,1149,803,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
 10,18,Tasa de Inversión BESS,1149,837,65,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,19,Demanda del Sistema,1002,84,51,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,20,Capacidad de Transmisión,1211,92,52,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,19,Demanda del Sistema,1002,84,51,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,20,Capacidad de Transmisión,1211,92,52,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
 10,21,Generación Excedente,1031,275,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 10,22,Pérdida de Rentabilidad,1022,533,49,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 10,23,Factor Incentivo BESS,1103,698,59,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
@@ -135,8 +189,33 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,75,2
 1,40,13,33,1,0,0,0,0,192,0,-1--1--1,,1|(1299,652)|
 1,41,37,33,1,0,0,0,0,192,0,-1--1--1,,1|(1601,771)|
 1,42,35,33,1,0,0,0,0,192,0,-1--1--1,,1|(1638,873)|
+10,43,Incremento de Demanda,1002,20,50,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,44,Crecimiento Total de Demanda,1002,-40,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,45,Tasa de Crecimiento Poblacional,900,-80,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,46,Expansión Minera e Industrial,1100,-80,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,47,Tasa de Degradación BESS,1650,757,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,48,Factor de Vida Útil BESS,1650,820,50,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,49,Líneas en Construcción,1500,92,60,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,50,Tasa de Puesta en Servicio,1350,92,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,51,Tasa de Inicio de Obras,1650,92,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,52,Tiempo de Construcción,1350,150,50,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,53,Presupuesto para Transmisión,1650,200,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,54,Proporción Inversión Transmisión,1800,200,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,55,Costo Unitario Transmisión,1650,30,60,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,60,44,43,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,61,45,44,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,62,46,44,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,63,19,43,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,64,48,47,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,65,3,47,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,66,52,50,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,67,49,50,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,68,53,51,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,69,55,51,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,70,54,53,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,71,22,53,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
 ///---\\\
-:L<%^E!@
+:L <%^E!@
 4:Time
 5:Pérdida de Rentabilidad
 9:current
